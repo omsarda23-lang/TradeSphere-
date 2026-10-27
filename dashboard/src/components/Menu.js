@@ -1,98 +1,81 @@
 import React, { useState } from "react";
 
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+
+import { FRONTEND_URL } from "../config";
+
+const items = [
+  { label: "Dashboard", to: "/" },
+  { label: "Orders", to: "/orders" },
+  { label: "Holdings", to: "/holdings" },
+  { label: "Positions", to: "/positions" },
+  { label: "Funds", to: "/funds" },
+  { label: "Apps", to: "/apps" },
+];
 
 const Menu = () => {
-  const [selectedMenu, setSelectedMenu] = useState(0);
+  const { pathname } = useLocation();
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
 
-  const handleMenuClick = (index) => {
-    setSelectedMenu(index);
-  };
-
-  const handleProfileClick = (index) => {
+  const handleProfileClick = () => {
     setIsProfileDropdownOpen(!isProfileDropdownOpen);
   };
 
   const menuClass = "menu";
   const activeMenuClass = "menu selected";
 
+  const isSelected = (to) =>
+    to === "/" ? pathname === "/" : pathname.startsWith(to);
+
   return (
     <div className="menu-container">
-      <img src="logo.png" style={{ width: "50px" }} />
+      <img src="/logo.png" style={{ width: "50px" }} alt="TradeSphere" />
       <div className="menus">
         <ul>
-          <li>
-            <Link
-              style={{ textDecoration: "none" }}
-              to="/"
-              onClick={() => handleMenuClick(0)}
-            >
-              <p className={selectedMenu === 0 ? activeMenuClass : menuClass}>
-                Dashboard
-              </p>
-            </Link>
-          </li>
-          <li>
-            <Link
-              style={{ textDecoration: "none" }}
-              to="/orders"
-              onClick={() => handleMenuClick(1)}
-            >
-              <p className={selectedMenu === 1 ? activeMenuClass : menuClass}>
-                Orders
-              </p>
-            </Link>
-          </li>
-          <li>
-            <Link
-              style={{ textDecoration: "none" }}
-              to="/holdings"
-              onClick={() => handleMenuClick(2)}
-            >
-              <p className={selectedMenu === 2 ? activeMenuClass : menuClass}>
-                Holdings
-              </p>
-            </Link>
-          </li>
-          <li>
-            <Link
-              style={{ textDecoration: "none" }}
-              to="/positions"
-              onClick={() => handleMenuClick(3)}
-            >
-              <p className={selectedMenu === 3 ? activeMenuClass : menuClass}>
-                Positions
-              </p>
-            </Link>
-          </li>
-          <li>
-            <Link
-              style={{ textDecoration: "none" }}
-              to="funds"
-              onClick={() => handleMenuClick(4)}
-            >
-              <p className={selectedMenu === 4 ? activeMenuClass : menuClass}>
-                Funds
-              </p>
-            </Link>
-          </li>
-          <li>
-            <Link
-              style={{ textDecoration: "none" }}
-              to="/apps"
-              onClick={() => handleMenuClick(6)}
-            >
-              <p className={selectedMenu === 6 ? activeMenuClass : menuClass}>
-                Apps
-              </p>
-            </Link>
-          </li>
+          {items.map((item) => (
+            <li key={item.to}>
+              <Link style={{ textDecoration: "none" }} to={item.to}>
+                <p className={isSelected(item.to) ? activeMenuClass : menuClass}>
+                  {item.label}
+                </p>
+              </Link>
+            </li>
+          ))}
         </ul>
         <hr />
-        <div className="profile" onClick={handleProfileClick}>
+        <div
+          className="profile"
+          onClick={handleProfileClick}
+          style={{ position: "relative" }}
+        >
           <div className="avatar">ZU</div>
           <p className="username">USERID</p>
+          {isProfileDropdownOpen && (
+            <div
+              style={{
+                position: "absolute",
+                top: "115%",
+                right: 0,
+                background: "#fff",
+                border: "1px solid #eee",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
+                padding: "10px 16px",
+                zIndex: 200,
+                whiteSpace: "nowrap",
+              }}
+            >
+              <a
+                href={FRONTEND_URL}
+                style={{
+                  textDecoration: "none",
+                  color: "rgb(65, 132, 243)",
+                  fontSize: "0.9rem",
+                }}
+              >
+                &larr; Back to website
+              </a>
+            </div>
+          )}
         </div>
       </div>
     </div>

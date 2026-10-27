@@ -1,4 +1,6 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { DASHBOARD_URL } from "../../config";
 
 function Stats() {
   return (
@@ -29,15 +31,19 @@ function Stats() {
           </p>
         </div>
         <div className="col-6 p-5">
-          <img src="media/images/ecosystem.png" style={{ width: "90%" }} />
+          <img
+            src="media/images/ecosystem.png"
+            style={{ width: "90%" }}
+            alt="The Zerodha ecosystem"
+          />
           <div className="text-center">
-            <a href="" className="mx-5" style={{ textDecoration: "none" }}>
+            <Link to="/product" className="mx-5" style={{ textDecoration: "none" }}>
               Explore our products{" "}
-              <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
-            </a>
-            <a href="" style={{ textDecoration: "none" }}>
+              <i className="fa fa-long-arrow-right" aria-hidden="true"></i>
+            </Link>
+            <a href={DASHBOARD_URL} style={{ textDecoration: "none" }}>
               Try Kite demo{" "}
-              <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+              <i className="fa fa-long-arrow-right" aria-hidden="true"></i>
             </a>
           </div>
         </div>

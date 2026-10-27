@@ -842,5 +842,13 @@ hr {
   background-color: rgb(212, 212, 212);
 }
 
+/* added: loading / error messages */
+.status-msg {
+  font-size: 0.9rem;
+  color: rgb(120, 120, 120);
+  margin: 12px 0;
+}
 
-
+.status-error {
+  color: #e24c4c;
+}

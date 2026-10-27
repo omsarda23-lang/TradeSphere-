@@ -1,12 +1,11 @@
 import React from "react";
-
 import Dashboard from "./Dashboard";
 import TopBar from "./TopBar";
 
-const Home = () => {
+const Home = ({ user }) => {
   return (
     <>
-      <TopBar />
+      <TopBar user={user} />
       <Dashboard />
     </>
   );

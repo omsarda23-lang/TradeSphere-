@@ -1,34 +1,60 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-
-import axios from "axios";
+import React, { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import GeneralContext from "./GeneralContext";
+import { api } from "../api";
+import { inr } from "../utils";
 
 import "./BuyActionWindow.css";
-const API = process.env.REACT_APP_API_URL || "http://localhost:3002";
-const BuyActionWindow = ({ uid }) => {
-  const [stockQuantity, setStockQuantity] = useState(1);
-  const [stockPrice, setStockPrice] = useState(0.0);
 
-  const handleBuyClick = () => {
-    axios.post(`${API}/newOrder`, {
-      name: uid,
-      qty: stockQuantity,
-      price: stockPrice,
-      mode: "BUY",
-    });
+const BuyActionWindow = ({ uid, mode, price }) => {
+  const { closeWindow } = useContext(GeneralContext);
+  const navigate = useNavigate();
 
-    GeneralContext.closeBuyWindow();
-  };
+  const [stockQuantity, setStockQuantity] = useState("1");
+  const [stockPrice, setStockPrice] = useState(String(price ?? 0));
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
 
-  const handleCancelClick = () => {
-    GeneralContext.closeBuyWindow();
+  const isBuy = mode !== "SELL";
+  const value = Number(stockQuantity) * Number(stockPrice);
+
+  const handleOrderClick = async () => {
+    const qty = Number(stockQuantity);
+    const orderPrice = Number(stockPrice);
+
+    if (!Number.isInteger(qty) || qty < 1) {
+      setError("Quantity must be a whole number of 1 or more.");
+      return;
+    }
+    if (!Number.isFinite(orderPrice) || orderPrice < 0) {
+      setError("Price must be 0 or more.");
+      return;
+    }
+
+    setBusy(true);
+    setError("");
+    try {
+      await api.post("/newOrder", {
+        name: uid,
+        qty,
+        price: orderPrice,
+        mode: isBuy ? "BUY" : "SELL",
+      });
+      closeWindow();
+      navigate("/orders"); // show the saved order straight away
+    } catch (err) {
+      setError("Could not place the order. Please try again in a moment.");
+      setBusy(false);
+    }
   };
 
   return (
-    <div className="container" id="buy-window" draggable="true">
+    <div className="container" id="buy-window">
       <div className="regular-order">
+        <h4 className="window-title">
+          {isBuy ? "Buy" : "Sell"} {uid}
+        </h4>
         <div className="inputs">
           <fieldset>
             <legend>Qty.</legend>
@@ -36,6 +62,7 @@ const BuyActionWindow = ({ uid }) => {
               type="number"
               name="qty"
               id="qty"
+              min="1"
               onChange={(e) => setStockQuantity(e.target.value)}
               value={stockQuantity}
             />
@@ -47,6 +74,7 @@ const BuyActionWindow = ({ uid }) => {
               name="price"
               id="price"
               step="0.05"
+              min="0"
               onChange={(e) => setStockPrice(e.target.value)}
               value={stockPrice}
             />
@@ -55,14 +83,30 @@ const BuyActionWindow = ({ uid }) => {
       </div>
 
       <div className="buttons">
-        <span>Margin required ₹140.65</span>
+        {error ? (
+          <span className="window-error">{error}</span>
+        ) : (
+          <span>
+            Order value ₹{inr(Number.isFinite(value) ? value : 0)}
+          </span>
+        )}
         <div>
-          <Link className="btn btn-blue" onClick={handleBuyClick}>
-            Buy
-          </Link>
-          <Link to="" className="btn btn-grey" onClick={handleCancelClick}>
+          <button
+            type="button"
+            className={isBuy ? "btn btn-blue" : "btn btn-red"}
+            onClick={handleOrderClick}
+            disabled={busy}
+          >
+            {busy ? "Placing..." : isBuy ? "Buy" : "Sell"}
+          </button>
+          <button
+            type="button"
+            className="btn btn-grey"
+            onClick={closeWindow}
+            disabled={busy}
+          >
             Cancel
-          </Link>
+          </button>
         </div>
       </div>
     </div>

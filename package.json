@@ -1,0 +1,14 @@
+{
+  "name": "tradesphere",
+  "private": true,
+  "scripts": {
+    "install-all": "npm install --prefix backend && npm install --prefix frontend && npm install --prefix dashboard",
+    "backend": "npm start --prefix backend",
+    "frontend": "npm start --prefix frontend",
+    "dashboard": "npm start --prefix dashboard",
+    "start": "concurrently \"npm run backend\" \"npm run frontend\" \"npm run dashboard\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
